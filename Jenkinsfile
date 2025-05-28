@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-               git branch: 'main', url: 'https://github.com/meghavathveeresh/Petclinic.git'
+              git branch: 'main', url: 'https://github.com/meghavathveeresh/Petclinic.git'
             }
         }
           stage('Build') {
@@ -12,19 +12,15 @@ pipeline {
                bat 'mvn clean install'
             }
         }
-          stage('Test') {
-            steps {
-               bat 'mvn test'
-            }
-        }
-          stage('Generate Juint Test Results') {
-            steps {
-               junit 'target/surefire-reports/*.xml'
-            }
-        }
+         
           stage('Generate Artifacts') {
             steps {
                archiveArtifacts artifacts: 'target/*.war', followSymlinks: false
+            }
+        }
+		stage('deploy') {
+            steps {
+               deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'AMDN', path: '', url: 'http://localhost:8080')], contextPath: 'veereshkumar', war: 'target/*.war'
             }
         }
     }
